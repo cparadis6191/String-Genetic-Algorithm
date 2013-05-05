@@ -12,40 +12,45 @@
 using namespace std;
 
 int main(void) {
-	uint8_t* population;
-
 	// Seed the RNG algorithm
 	srand(time(NULL));
 
 
 	// Generate the initial population
-	population = generate_population();
+	genalg population;
 
-	cout << "Generation 0:" << endl;
-	for (int i = 0; i < 6; i++){
-		cout << bitset<8>(population[i]).to_string();
-		cout << " " << eval(population[i]) << endl;
-	}
+	cout << population;
 
 	for (int j = 0; j < 1000000; j++) {
-		advance_six(population);
-		crossover(population);
-		mutate(population);
+		population.step();
 	}
 
-	cout << endl << "Generation 4:" << endl;
-	for (int i = 0; i < 6; i++){
-		cout << bitset<8>(population[i]).to_string();
-		cout << " " << eval(population[i]) << endl;
-	}
+	cout << population;
 
 
 	return 0;
 }
 
 
+genalg::genalg() {
+	population = new uint8_t();
+	generation = 0;
+
+
+	return;
+}
+
+
+genalg::~genalg() {
+	delete population;
+
+
+	return;
+}
+
+
 // Returns the number of changes in a string plus one
-int eval(uint8_t organism) {
+int genalg::eval(uint8_t organism) const {
 	int fitness = 0;
 
 	for (int i = 0; i < 7; i++) {
@@ -57,21 +62,8 @@ int eval(uint8_t organism) {
 }
 
 
-// Seed in the main function
-uint8_t* generate_population(void) {
-	uint8_t* population = (uint8_t*) calloc(6, sizeof(uint8_t));
-
-	for (int i = 0; i < 6; i++){
-		population[i] = (uint8_t) rand();
-	}
-
-
-	return population;
-}
-
-
 // Pick six to advance based on fitness
-void advance_six(uint8_t* population) {
+void genalg::advance_six(void) {
 	uint8_t new_population[6];
 
 	int fitness_sum = 0;
@@ -80,29 +72,22 @@ void advance_six(uint8_t* population) {
 
 	double random;
 
-	// Pick 
 	for (int i = 0; i < 6; i++) {
 		fitness_sum += eval(population[i]);
 	}
 
-	//cout << "Normalized Fitness: " << endl;
 	for (int i = 0; i < 6; i++) {
 		normalized_fitness[i] = eval(population[i])/((double) fitness_sum);
-		//cout << normalized_fitness[i] << endl;
 	}
 
-	//cout << "Integral Fitness: " << endl;
 	integral_fitness[0] = normalized_fitness[0];
 	for (int i = 1; i < 6; i++) {
 		integral_fitness[i] = normalized_fitness[i] + integral_fitness[i - 1];
-		//cout << integral_fitness[i] << endl;
 	}
 
 	// Choose the six populations to mate
-	//cout << "Pick six random strings " << endl;
 	for (int i = 0; i < 6; i++) {
 		random = (double) rand()/(RAND_MAX);
-		//cout << random << endl;
 
 		if (random < integral_fitness[0]) {
 			new_population[i] = population[0];
@@ -134,15 +119,12 @@ void advance_six(uint8_t* population) {
 }
 
 
-void crossover(uint8_t* population) {
+void genalg::crossover(void) {
 	// Pick a crossover point from 1 to 7
 	int crossover_point0 = rand()%7 + 1;
 	int crossover_point1 = rand()%7 + 1;
 	int crossover_mask0 = 0;
 	int crossover_mask1= 0;
-
-	//printf("cross at: %i\n", crossover_point0);
-	//printf("cross at: %i\n", crossover_point1);
 
 	uint8_t temp0 = 0;
 	uint8_t temp1 = 0;
@@ -188,14 +170,41 @@ void crossover(uint8_t* population) {
 }
 
 
-void mutate(uint8_t* population) {
+void genalg::mutate(void) {
 	int rand_string = rand()%6;
 	int rand_bit = rand()%8;
 
 	// Flip a random bit in a random string
 	population[rand_string] ^= (1 << rand_bit);
-	//cout << "Flip bit " << rand_bit << " of string " << rand_string << endl;
 	
 
 	return;
 }
+
+
+void genalg::step(void) {
+	advance_six();
+	crossover();
+	mutate();
+
+	generation++;
+
+	return;
+}
+
+
+ostream& operator<<(ostream& os, const genalg& population) {
+	cout << "Generation " << population.generation << ": " << endl;
+	cout << "Average Fitness of: " << endl;
+
+	for (int i = 0; i < 6; i++){
+		cout << bitset<8>(population[i]).to_string();
+		cout << " " << population.eval(population[i]) << endl;
+	} 
+
+	
+	return os;
+}
+
+
+uint8_t genalg::operator[](const int nIndex) const { return population[nIndex]; }
