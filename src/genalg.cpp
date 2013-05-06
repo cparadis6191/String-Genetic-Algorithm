@@ -34,9 +34,10 @@ int main(int argc, char* argv[]) {
 }
 
 
+// TODO Put these definitions in another file
 genalg::genalg() {
 	generation = 0;
-	fitness = new int[6];
+	fitness = new int[6]();
 	population = new uint8_t[6];
 
 	// Create the initial random population
@@ -64,28 +65,25 @@ genalg::~genalg() {
 
 // Calculates the fitness values for each organism this generation
 void genalg::evaluate(void) {
+	average_fitness = 0;
+
 	// For each organism
 	for (int i = 0; i < 6; i++) {
-		fitness[i] = eval(population[i]);
+		fitness[i] = 1;
+
+		// Compare each bit to the previous bit
+		for (int j = 0; j < 7; j++) {
+			// If current bit doesn't equal next bit return 1, else 0
+			fitness[i] += (((population[i]&(1 << j)) != ((population[i]&(2 << j)) >> 1))?1:0);
+		}
+
+		average_fitness += fitness[i];
 	}
+
+	average_fitness /= 6;
 
 
 	return;
-}
-
-
-// Calculates the fitness values for each organism this generation
-int genalg::eval(uint8_t organism) const {
-	int fitness = 0;
-
-	// Compare each bit to the previous bit
-	for (int i = 0; i < 7; i++) {
-		// If current bit doesn't equal next bit return 1, else 0
-		fitness += (((organism&(1 << i)) != ((int) (organism&(2 << i)) >> 1))?1:0);
-	}
-
-
-	return (fitness + 1);
 }
 
 
@@ -209,6 +207,7 @@ void genalg::mutate(void) {
 }
 
 
+// Apply all the rules for creating a new generation
 void genalg::step(void) {
 	advance_six();
 	crossover();
@@ -223,7 +222,7 @@ void genalg::step(void) {
 
 ostream& operator<<(ostream& os, const genalg& population) {
 	cout << "Generation " << population.generation << ": " << endl;
-	cout << "Average Fitness of: " << endl;
+	cout << "Average Fitness of: " << population.average_fitness << endl;
 
 	for (int i = 0; i < 6; i++){
 		cout << bitset<8>(population.population[i]).to_string();
@@ -235,4 +234,4 @@ ostream& operator<<(ostream& os, const genalg& population) {
 }
 
 
-uint8_t genalg::operator[](const int nIndex) const { return population[nIndex]; }
+uint8_t genalg::operator[](const int i) const { return population[i]; }

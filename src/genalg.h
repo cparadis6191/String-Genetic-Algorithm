@@ -14,7 +14,6 @@ class genalg {
 
 		// Evaluate the fitness of the organisms
 		void evaluate(void);
-		int eval(uint8_t organism) const;
 		// Choose six from the previous population to mate
 		void advance_six(void);
 		// Crossover the first two pairs
@@ -29,6 +28,7 @@ class genalg {
 
 	private:
 		unsigned int generation;
+		double average_fitness;
 		int* fitness;
 		uint8_t* population;
 };
