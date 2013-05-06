@@ -69,6 +69,7 @@ void genalg::evaluate(void) {
 
 	// For each organism
 	for (int i = 0; i < 6; i++) {
+		// Changes + 1
 		fitness[i] = 1;
 
 		// Compare each bit to the previous bit
@@ -92,41 +93,47 @@ void genalg::advance_six(void) {
 	uint8_t new_population[6];
 
 	int fitness_sum = 0;
-	double normalized_fitness[6];
-	double integral_fitness[6];
+	double probability[6];
+	double integral_probability[6];
 
-	double random;
+	double random_spin;
 
+
+	// Find the sum of the fitnessess
 	for (int i = 0; i < 6; i++) {
 		fitness_sum += fitness[i];
 	}
 
+	// Calculate each probability
 	for (int i = 0; i < 6; i++) {
-		normalized_fitness[i] = fitness[i]/((double) fitness_sum);
+		probability[i] = fitness[i]/((double) fitness_sum);
 	}
 
-	integral_fitness[0] = normalized_fitness[0];
+	// Integrate to get a CDF of sorts
+	integral_probability[0] = probability[0];
 	for (int i = 1; i < 6; i++) {
-		integral_fitness[i] = normalized_fitness[i] + integral_fitness[i - 1];
+		integral_probability[i] = probability[i] + integral_probability[i - 1];
 	}
 
-	// Choose the six populations to mate
+	// Choose the six organisms to mate
 	for (int i = 0; i < 6; i++) {
-		random = ((double) rand())/RAND_MAX;
+		// Spin the roulette wheel
+		random_spin = ((double) rand())/RAND_MAX;
 
-		if (random < integral_fitness[0]) {
+		// Find which organism has been chosen
+		if (random_spin < integral_probability[0]) {
 			new_population[i] = population[0];
 
-		} else if (random < integral_fitness[1]) {
+		} else if (random_spin < integral_probability[1]) {
 			new_population[i] = population[1];
 
-		} else if (random < integral_fitness[2]) {
+		} else if (random_spin < integral_probability[2]) {
 			new_population[i] = population[2];
 
-		} else if (random < integral_fitness[3]) {
+		} else if (random_spin < integral_probability[3]) {
 			new_population[i] = population[3];
 
-		} else if (random < integral_fitness[4]) {
+		} else if (random_spin < integral_probability[4]) {
 			new_population[i] = population[4];
 
 		} else {
@@ -135,6 +142,7 @@ void genalg::advance_six(void) {
 		}
 	}
 
+	// Assign the new population to the class array
 	for (int i = 0; i < 6; i++) {
 		population[i] = new_population[i];
 	}
