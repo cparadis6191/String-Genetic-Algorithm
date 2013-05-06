@@ -46,7 +46,7 @@ genalg::genalg() {
 	}
 
 	// Evaluate the initial fitness
-	//evaluate();
+	evaluate();
 
 
 	return;
@@ -63,7 +63,19 @@ genalg::~genalg() {
 
 
 // Calculates the fitness values for each organism this generation
-int genalg::evaluate(uint8_t organism) const {
+void genalg::evaluate(void) {
+	// For each organism
+	for (int i = 0; i < 6; i++) {
+		fitness[i] = eval(population[i]);
+	}
+
+
+	return;
+}
+
+
+// Calculates the fitness values for each organism this generation
+int genalg::eval(uint8_t organism) const {
 	int fitness = 0;
 
 	// Compare each bit to the previous bit
@@ -88,11 +100,11 @@ void genalg::advance_six(void) {
 	double random;
 
 	for (int i = 0; i < 6; i++) {
-		fitness_sum += evaluate(population[i]);
+		fitness_sum += fitness[i];
 	}
 
 	for (int i = 0; i < 6; i++) {
-		normalized_fitness[i] = evaluate(population[i])/((double) fitness_sum);
+		normalized_fitness[i] = fitness[i]/((double) fitness_sum);
 	}
 
 	integral_fitness[0] = normalized_fitness[0];
@@ -201,7 +213,7 @@ void genalg::step(void) {
 	advance_six();
 	crossover();
 	mutate();
-	//evaluate();
+	evaluate();
 
 	generation++;
 
@@ -215,7 +227,7 @@ ostream& operator<<(ostream& os, const genalg& population) {
 
 	for (int i = 0; i < 6; i++){
 		cout << bitset<8>(population.population[i]).to_string();
-		cout << " " << population.evaluate(population[i]) << endl;
+		cout << " " << population.fitness[i] << endl;
 	} 
 
 	

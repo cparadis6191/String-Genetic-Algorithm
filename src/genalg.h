@@ -13,7 +13,8 @@ class genalg {
 		void step(void);
 
 		// Evaluate the fitness of the organisms
-		int evaluate(uint8_t organism) const;
+		void evaluate(void);
+		int eval(uint8_t organism) const;
 		// Choose six from the previous population to mate
 		void advance_six(void);
 		// Crossover the first two pairs
