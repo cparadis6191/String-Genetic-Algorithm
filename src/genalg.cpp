@@ -112,7 +112,7 @@ void genalg::advance_six(void) {
 
 	// Choose the six populations to mate
 	for (int i = 0; i < 6; i++) {
-		random = (double) rand()/(RAND_MAX);
+		random = ((double) rand())/RAND_MAX;
 
 		if (random < integral_fitness[0]) {
 			new_population[i] = population[0];
@@ -145,50 +145,34 @@ void genalg::advance_six(void) {
 
 
 void genalg::crossover(void) {
-	// Pick a crossover point from 1 to 7
-	int crossover_point0 = rand()%7 + 1;
-	int crossover_point1 = rand()%7 + 1;
-	int crossover_mask0 = 0;
-	int crossover_mask1= 0;
+	int crossover_point;
+	int crossover_mask;
+	uint8_t temp;
 
-	uint8_t temp0 = 0;
-	uint8_t temp1 = 0;
+	// Crossover both pairs
+	for (int i = 0; i < 3; i += 2) {
+		// Pick a crossover point from 1 to 7
+		crossover_point = (rand()%7 + 1);
+		crossover_mask = 0;
 
+		// Construct the crossover mask of 1s
+		for (int j = 0; j < crossover_point; j++) {
+			crossover_mask |= (1 << j);
+		}
 
-	// Construct the crossover mask of 1s
-	for (int i = 0; i < crossover_point0; i++) {
-		crossover_mask0 |= (1 << i);
+		// Save the lower bits of the first organism
+		temp = population[i]&crossover_mask;
+
+		// Clear the lower bits of the first organism
+		population[i] &= ~crossover_mask;
+		// Swap the lower bits of the first organism
+		population[i] |= population[i + 1]&crossover_mask;
+
+		// Clear the lower bits of the second organism
+		population[i + 1] &= ~crossover_mask;
+		// Swap the lower bits of the second organism
+		population[i + 1] |= temp&crossover_mask;
 	}
-
-	// Construct the crossover mask of 1s
-	for (int i = 0; i < crossover_point1; i++) {
-		crossover_mask1 |= (1 << i);
-	}
-
-	// Save the lower bits
-	temp0 = population[0]&crossover_mask0;
-	temp1 = population[1]&crossover_mask0;
-
-	// Clear the lower bits
-	population[0] &= ~crossover_mask0;
-	population[1] &= ~crossover_mask0;
-
-	// Cross the bits over
-	population[0] |= temp1;
-	population[1] |= temp0;
-
-
-	// Save the lower bits
-	temp0 = population[2]&crossover_mask1;
-	temp1 = population[3]&crossover_mask1;
-
-	// Clear the lower bits
-	population[2] &= ~crossover_mask1;
-	population[3] &= ~crossover_mask1;
-
-	// Cross the bits over
-	population[2] |= temp1;
-	population[3] |= temp0;
 
 
 	return;
@@ -232,6 +216,3 @@ ostream& operator<<(ostream& os, const genalg& population) {
 	
 	return os;
 }
-
-
-uint8_t genalg::operator[](const int i) const { return population[i]; }

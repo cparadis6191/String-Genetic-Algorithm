@@ -21,8 +21,7 @@ class genalg {
 		// Mutate a random bit of all the organisms
 		void mutate(void);
 
-		// Overloaded operators for easy printing
-		uint8_t operator[](const int nIndex) const;
+		// Overloaded operator for easy printing
 		friend std::ostream& operator<<(std::ostream& os, const genalg& obj);
 		
 
