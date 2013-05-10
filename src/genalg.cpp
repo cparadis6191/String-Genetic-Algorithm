@@ -11,6 +11,20 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
+	int n_generations = 0;
+
+	if (argc != 2) {
+		cout << "Program takes a single input!" << endl;
+
+
+		return 1;
+	} else if ((n_generations = atoi(argv[1])) < 0) {
+		cout << "Please input the number of generations to advance!" << endl;
+
+
+		return 2;
+	}
+
 	// Seed the RNG algorithm
 	srand(time(NULL));
 
@@ -18,15 +32,15 @@ int main(int argc, char* argv[]) {
 	// Generate the initial population
 	genalg population;
 
-	// Print the population
+	// Print the initial population
 	cout << population;
 
 	// Step through generations
-	for (int j = 0; j < atoi(argv[1]); j++) {
+	for (int j = 0; j < n_generations; j++) {
 		population.step();
 	}
 
-	// Print the population
+	// Print the final population
 	cout << population;
 
 
@@ -89,7 +103,7 @@ void genalg::evaluate(void) {
 
 
 // Pick six to advance based on fitness
-void genalg::advance_six(void) {
+void genalg::roulette(void) {
 	uint8_t new_population[6];
 
 	int fitness_sum = 0;
@@ -201,12 +215,13 @@ void genalg::mutate(void) {
 
 // Apply all the rules for creating a new generation
 void genalg::step(void) {
-	advance_six();
+	roulette();
 	crossover();
 	mutate();
 	evaluate();
 
 	generation++;
+
 
 	return;
 }

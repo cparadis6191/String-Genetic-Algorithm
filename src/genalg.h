@@ -15,7 +15,7 @@ class genalg {
 		// Evaluate the fitness of the organisms
 		void evaluate(void);
 		// Choose six from the previous population to mate
-		void advance_six(void);
+		void roulette(void);
 		// Crossover the first two pairs
 		void crossover(void);
 		// Mutate a random bit of all the organisms
