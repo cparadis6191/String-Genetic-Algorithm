@@ -32,4 +32,5 @@ class genalg {
 		uint8_t* population;
 };
 
+
 #endif
