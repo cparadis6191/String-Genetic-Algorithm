@@ -38,10 +38,8 @@ int main(int argc, char* argv[]) {
 	// Step through generations
 	for (int j = 0; j < n_generations; j++) {
 		population.step();
+		cout << population;
 	}
-
-	// Print the final population
-	cout << population;
 
 
 	return 0;
