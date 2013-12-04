@@ -1,6 +1,6 @@
 TARGET = genalg
-OBJS = genalg.o
-CXXFLAGS = -g -Wall
+OBJS = ${TARGET}.o
+CXXFLAGS = -g -Wall -Wextra
 LDFLAGS = # Libaries to be linked
 .PHONY:clean
 
@@ -8,7 +8,7 @@ LDFLAGS = # Libaries to be linked
 ${TARGET}:${OBJS}
 	${CXX} -o ${TARGET} ${OBJS} ${LDFLAGS}
 
-genalg.o:genalg.h
+${TARGET}.o:${TARGET}.h
 
 # This rule must be called explicitly
 clean:
