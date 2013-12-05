@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
 
 		return 1;
 	} else if ((n_generations = atoi(argv[1])) < 0) {
-		cout << "Please input the number of generations to advance!" << endl;
+		cout << "Please input the max number of generations to advance!" << endl;
 
 
 		return 2;
@@ -36,10 +36,11 @@ int main(int argc, char* argv[]) {
 	cout << population;
 
 	// Step through generations
-	for (int j = 0; j < n_generations; j++) {
+	do {
 		population.step();
 		cout << population;
-	}
+	} while ((population.get_average_fitness() != 8) &&
+             (population.get_generation() < (unsigned int) n_generations));
 
 
 	return 0;
@@ -55,7 +56,8 @@ genalg::genalg() {
 	// Create the initial random population
 	for (int i = 0; i < 6; i++) {
 		// Not the best method to generate random bits
-		population[i] = (uint8_t) rand();
+		population[i] = 1;
+	//	(uint8_t) rand();
 	}
 
 	// Evaluate the initial fitness
@@ -223,6 +225,11 @@ void genalg::step(void) {
 
 	return;
 }
+
+
+// Public accessors
+double genalg::get_average_fitness() { return average_fitness; }
+unsigned int genalg::get_generation() { return generation; }
 
 
 ostream& operator<<(ostream& os, const genalg& population) {
