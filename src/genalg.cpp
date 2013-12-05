@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
 		population.step();
 		cout << population;
 	} while ((population.get_average_fitness() != 8) &&
-             (population.get_generation() < (unsigned int) n_generations));
+	         (population.get_generation() < (unsigned int) n_generations));
 
 
 	return 0;
@@ -53,11 +53,9 @@ genalg::genalg() {
 	fitness = new int[6]();
 	population = new uint8_t[6];
 
-	// Create the initial random population
+	// Create the initial unfit population
 	for (int i = 0; i < 6; i++) {
-		// Not the best method to generate random bits
-		population[i] = 1;
-	//	(uint8_t) rand();
+		population[i] = 0;
 	}
 
 	// Evaluate the initial fitness
@@ -78,6 +76,7 @@ genalg::~genalg() {
 
 
 // Calculates the fitness values for each organism this generation
+// Fitness is equal to bit changes plus one
 void genalg::evaluate(void) {
 	average_fitness = 0;
 
